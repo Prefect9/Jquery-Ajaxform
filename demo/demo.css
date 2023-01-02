@@ -1,5 +1,5 @@
 html, body{ min-height: 100%; padding: 0; margin: 0; display: block; color: #000 }
-*{ box-sizing: border-box; font-family: sans-serif }
+*{ box-sizing: border-box; font-family: monospace, sans-serif }
 h1{ margin: 0 0 30px }
 .page{ min-height: 100%; display: flex; background: #efefef; padding: 40px }
 .page > div{ padding: 20px 20px 0; width: calc(100% / 3) }
@@ -14,4 +14,6 @@ h1{ margin: 0 0 30px }
 .radio{ margin-top: 10px }
 .radio-name{ font-size: 16px; font-weight: 600 }
 button{ font-size: 16px; line-height: 120%; display: flex; align-items: center; height: 40px; border: 0; color: #fff; background: #2e80f3; margin-top: 40px; text-align: center; width: 100%; border-radius: 8px; justify-content: center; outline: none }
-.required{ color: rgba(0, 0, 0, .5) }
+.required{ color: rgba(0, 0, 0, .5); font-size: 14px }
+.error_block{ display: none; margin-top: 20px; width: 100% }
+.error_block > div{ width: 100%; padding: 12px 25px; font-size: 16px; line-height: 130%; font-weight: 500; background: #ffebeb; border-radius: 8px; color: red }
