@@ -12,5 +12,5 @@ html, body{ min-height: 100%; padding: 0; margin: 0; display: block; color: #000
 .radios{ margin-top: 20px; width: 50% }
 .radio{ margin-top: 10px }
 .radio-name{ font-size: 16px; font-weight: 600 }
-button{ font-size: 16px; line-height: 120%; display: flex; align-items: center; height: 40px; border: 0; color: #fff; background: #2e80f3; margin-top: 40px; text-align: center; width: 100%; border-radius: 8px; justify-content: center }
+button{ font-size: 16px; line-height: 120%; display: flex; align-items: center; height: 40px; border: 0; color: #fff; background: #2e80f3; margin-top: 40px; text-align: center; width: 100%; border-radius: 8px; justify-content: center; outline: none }
 .required{ color: rgba(0, 0, 0, .5) }
