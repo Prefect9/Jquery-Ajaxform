@@ -148,7 +148,7 @@
                     default:
                         throw "Unsupported responseType"
                 }
-                ajax_options.error = function (jqXHR, textStatus) { console.log(textStatus)
+                ajax_options.error = function (jqXHR, textStatus) { console.log(jqXHR)
                     if(textStatus == "parsererror") _events.error.trigger("invalid_response")
                     else _events.error.trigger("no_internet_connection")
                     if(_showProgress) _events.progress.trigger(100)
