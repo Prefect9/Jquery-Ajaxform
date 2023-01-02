@@ -1,4 +1,4 @@
-# Jquery Ajaxform
+# Jquery AjaxForm
 ## Dependencies
 For the library to work, you need to connect [jQuery](https://jquery.com/download/) and [EventsContainer](https://github.com/Prefect9/Js-EventsContainer). Scripts with libraries need to be connected before the <script> tag with the AjaxForm library.
 
@@ -103,19 +103,35 @@ var form = new AjaxForm(options)
 
 ### Options
 #### options.form | `HTMLElement`, _optional_
-the html element to which the ajaxForm object will be bound. If omitted, an empty form will be created.
+The html element to which the ajaxForm object will be bound. If omitted, an empty form will be created.
 
 #### options.method | `enum`, _required_
-sending method: `get`, `post`.
+Sending method: `get`, `post`.
 
 #### options.url | `string`, _optional_
-ajax delivery address: `""`, `"/"`, `"https://example.com/"`. Default: `""`.
+Ajax delivery address: `""`, `"/"`, `"https://example.com/"`. Default: `""`.
 
 #### options.requestType | `enum`, _optional_
-type of data being sent: `urlencoded`, `json`, `form-data`. Default: `urlencoded`.
+Type of data being sent: `urlencoded`, `json`, `form-data`. Default: `urlencoded`.
 
 #### options.responseType | `enum`, _optional_
-type of data expected from the server: `text`, `json`. Default: `json`.
+Type of data expected from the server: `text`, `json`. Default: `json`.
 
 #### options.getData | `function`, _optional_
-an arbitrary function for transmitting data to be sent via ajax. If the `getData` function is specified, no data is taken from the form fields. By default, data is serialized from form fields that have the name attribute.
+An arbitrary function for transmitting data to be sent via ajax. If the `getData` function is specified, no data is taken from the form fields. By default, data is serialized from form fields that have the name attribute.
+
+### Methods
+#### .send()
+Submit the form.
+
+#### .loading(function(sending_form){ ... })
+Add an event before submitting the form, there can be an unlimited number for one form.
+
+#### .success(function(request_data){ ... })
+Add an event after successfully submitting the form, the server response is passed to the function. The number of event handlers can be added several.
+
+#### .error(function (error_code) { ... })
+Add an event when an error occurs. The number of event handlers can be added several.
+
+#### .clear_events()
+Delete all event handlers.

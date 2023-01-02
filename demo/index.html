@@ -20,7 +20,7 @@
         <script src="../jquery.ajax-form.js"></script>
         <script>
             var form = $("#test_form").ajaxForm()
-                .loading(function (sended_form) {
+                .loading(function (sending_form) {
                     if(!sended_form.find("input[name=name]").val().length) return "invalid:empty_name"
                 })
                 .success(function (data) {
