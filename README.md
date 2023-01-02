@@ -101,10 +101,21 @@ var options = {
 var form = new AjaxForm(options)
 ```
 
-##### Options
-* `options.form`, _HTMLElement_ - the html element to which the ajaxForm object will be bound. If omitted, an empty form will be created.
-* `options.method`, _enum_ - sending method: `get`, `post`.
-* `options.url`, _string_ - form delivery address: `""`, `"/"`, `"https://example.com/"`. Default: `""`.
-* `options.requestType`, _enum_ - type of data being sent: `urlencoded`, `json`, `form-data`. Default: `urlencoded`.
-* `options.responseType`, _enum_ - type of data expected from the server: `text`, `json`. Default: `json`.
-* `options.getData`, _function_ - an arbitrary function for transmitting data to be sent via ajax. If the `getData` function is specified, no data is taken from the form fields. By default, data is serialized from form fields that have the name attribute.
+### Options
+##### options.form `HTMLElement` *optional*
+the html element to which the ajaxForm object will be bound. If omitted, an empty form will be created.
+
+##### options.method `enum` *required*
+sending method: `get`, `post`.
+
+##### options.url `string` *optional*
+ajax delivery address: `""`, `"/"`, `"https://example.com/"`. Default: `""`.
+
+##### options.requestType `_enum_` *optional*
+type of data being sent: `urlencoded`, `json`, `form-data`. Default: `urlencoded`.
+
+##### options.responseType `enum` *optional*
+type of data expected from the server: `text`, `json`. Default: `json`.
+
+##### options.getData `function` *optional*
+an arbitrary function for transmitting data to be sent via ajax. If the `getData` function is specified, no data is taken from the form fields. By default, data is serialized from form fields that have the name attribute.
