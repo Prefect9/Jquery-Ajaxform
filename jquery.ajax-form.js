@@ -1,5 +1,5 @@
 /* Jquey AjaxForm
- * Version: 1.00
+ * Version: 1.01
  * Author: Prefect9
  * TG: https://t.me/it_dev9/
  */
@@ -10,7 +10,7 @@
             var _this = $(this)
             if(_this.length != 1) throw "You can initialize only one form at a time"
             if(_this.prop("tagName") != "FORM") throw "With this method, you can initialize only the <form> tag"
-            return AjaxForm({
+            return new AjaxForm({
                 form: _this[0],
                 method: _this.attr("method"),
                 url: _this.attr("action"),
@@ -31,11 +31,10 @@
                 _form,
                 _customData,
                 _events = {
-                    loading: window.EventsContainer(),
-                    success: window.EventsContainer(),
-                    error: window.EventsContainer()
-                },
-                _return
+                    loading: new window.EventsContainer(),
+                    success: new window.EventsContainer(),
+                    error: new window.EventsContainer()
+                }
 
             if (typeof options != "object") throw "Invalid configuration object"
 
@@ -86,20 +85,21 @@
                 return _data
             }
             var sending_data = function () {
-                var _data
-                if(_customData != undefined) _data = _customData()
-                else if(_requestType == "urlencoded"){
-                    _data = new URLSearchParams()
-                    var _getted_form_data = get_form_data()
-                    for(var _name in _getted_form_data) _data.append(_name, _getted_form_data[_name])
+                var _data_form,
+                    _data_return
+                if(_customData != undefined) _data_form = _customData()
+                else _data_form = get_form_data()
+
+                if(_requestType == "urlencoded"){
+                    _data_return = new URLSearchParams()
+                    for(var _name in _data_form) _data_return.append(_name, _data_form[_name])
                 }else if(_requestType == "json"){
-                    _data = get_form_data()
+                    _data_return = _data_form
                 }else if(_requestType == "form-data"){
-                    _data = new FormData()
-                    var _getted_form_data = get_form_data()
-                    for(var _name in _getted_form_data) _data.append(_name, _getted_form_data[_name])
-                }
-                return _data
+                    _data_return = new FormData()
+                    for(var _name in _data_form) _data_return.append(_name, _data_form[_name])
+                }else throw "Unknown request type"
+                return _data_return
             }
             var send = function(){
                 for(var loading_result of _events.loading.trigger(_form)){
@@ -152,7 +152,7 @@
                 }
                 $.ajax(ajax_options)
 
-                return _return
+                return this
             }
             _form.on("submit", function (e) {
                 e.preventDefault()
@@ -161,27 +161,31 @@
 
             var loading = function(_f){
                 _events.loading.add(_f)
-                return _return
+                return this
             }
             var success = function(_f){
                 _events.success.add(_f)
-                return _return
+                return this
             }
             var error = function(_f){
                 _events.error.add(_f)
-                return _return
+                return this
             }
             var clear_events = function(){
                 _events.loading.clear()
                 _events.success.clear()
                 _events.error.clear()
+                return this
             }
-            _return = { send:send, loading:loading, success:success, error:error, clear_events:clear_events }
 
-            return _return
+            this.send = send
+            this.loading = loading
+            this.success = success
+            this.error = error
+            this.clear_events = clear_events
         }
         window.AjaxForm = AjaxForm
-        window.AjaxFormVersion = "1.00"
+        window.AjaxFormVersion = "1.01"
     }catch (e) {
         console.error("AjaxForm error: "+e)
     }

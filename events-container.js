@@ -1,5 +1,5 @@
 /* Js EventsContainer
- * Version: 1.00
+ * Version: 1.01
  * Author: Prefect9
  * TG: https://t.me/it_dev9/
  */
@@ -7,12 +7,11 @@
     "use strict";
     try {
         var EventsContainer = function () {
-            var _callbacks = [],
-                _return
+            var _callbacks = []
             var add = function (_f) {
                 if(typeof _f != "function") throw "you are trying to add a non-function like event"
                 _callbacks.push(_f)
-                return _return
+                return this
             }
             var trigger = function (...args) {
                 var _result = []
@@ -21,13 +20,15 @@
             }
             var clear = function () {
                 _callbacks = []
-                return _return
+                return this
             }
-            _return = { add:add, trigger:trigger, clear:clear }
-            return _return
+
+            this.add = add
+            this.trigger = trigger
+            this.clear = clear
         }
         window.EventsContainer = EventsContainer
-        window.EventsContainerVersion = "1.00"
+        window.EventsContainerVersion = "1.01"
     }catch (e) {
         console.error("EventsContainer error: "+e)
     }
