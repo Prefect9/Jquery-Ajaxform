@@ -1,0 +1,34 @@
+<html>
+    <head>
+        <title>Jquery AjaxForm</title>
+        <meta name="description" content="Перехват события submit <form> и отправка через Ajax" />
+    </head>
+    <body>
+        <form action="" method="post" id="test_form" data-request-type="form-data">
+            <input type="text" name="name">
+            <input type="checkbox" name="checkbox">
+            <input type="radio" name="r_1" value="1">
+            <input type="radio" name="r_1" value="2">
+            <input type="radio" name="r_1" value="3">
+            <input type="radio" name="r_2" value="1">
+            <input type="radio" name="r_2" value="2">
+            <input type="radio" name="r_2" value="3">
+            <button type="submit">Submit</button>
+        </form>
+        <script src="../events-container.js"></script>
+        <script src="../jquery-3.6.3.min.js"></script>
+        <script src="../jquery.ajax-form.js"></script>
+        <script>
+            var form = $("#test_form").ajaxForm()
+                .loading(function (sended_form) {
+                    if(!sended_form.find("input[name=name]").val().length) return "invalid:empty_name"
+                })
+                .success(function (data) {
+                    console.log("success", data)
+                })
+                .error(function (error_code) {
+                    console.log("error: " + error_code)
+                })
+        </script>
+    </body>
+</html>
