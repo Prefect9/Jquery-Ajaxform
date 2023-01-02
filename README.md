@@ -2,7 +2,7 @@
 ## Dependencies
 For the library to work, you need to connect [jQuery](https://jquery.com/download/) and [EventsContainer](https://github.com/Prefect9/Js-EventsContainer). Scripts with libraries need to be connected before the <script> tag with the AjaxForm library.
 ## jQuery property
-Now for the html tag <form> you can apply `.ajaxForm()` and it will be sent to the server without reloading the page.
+Now for the html tag \<form\> you can apply `.ajaxForm()` and it will be sent to the server without reloading the page.
 ## Examples
 Only the following fields will be sent via ajax: text, checkbox and radio.
 ```html
@@ -51,7 +51,7 @@ form.success(function (data) {
 The number of `success`, `error` and `loading` events can be set to an unlimited number.
 ## Types of data received and sent
 Types of data to be sent:
-- `urlencoded` (by default)
+- `urlencoded` _(by default)_
 - `json`
 - `form-data`
 To change the type of data being sent, add the `data-request-type` attribute to the form:
@@ -60,8 +60,8 @@ To change the type of data being sent, add the `data-request-type` attribute to 
 ```
 
 Types of data received:
-- `json`
-- `text` (by default)
+- `json` _(by default)_
+- `text`
 If the server returns data that does not match the expected type, the error event is called with the `invalid_response` argument. To change the type of data received, add the `data-response-type` attribute to the form:
 ```html
 <form action="" method="post" id="test_form" data-response-type="json">
