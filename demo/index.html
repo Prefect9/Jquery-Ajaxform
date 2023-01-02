@@ -3,18 +3,23 @@
         <title>Jquery AjaxForm</title>
         <meta name="description" content="Перехват события submit <form> и отправка через Ajax" />
         <link rel="stylesheet" href="demo.css">
+
+        <script src="../events-container.js"></script>
+        <script src="../jquery-3.6.3.min.js"></script>
+        <script src="../jquery.ajax-form.js?"></script>
     </head>
     <body>
         <div class="page">
             <div>
-                <form action="success.json" method="post" id="test_form">
+                <form action="success.json" method="post" id="test_form_1">
+                    <h1>With a pre-check</h1>
                     <div class="input-text">
                         <label for="i1"><span>Name</span> <span class="required">Required</span></label>
                         <input type="text" id="i1" name="name" placeholder="Enter your name">
                     </div>
                     <div class="checkbox">
                         <input type="checkbox" name="checkbox" id="c1">
-                        <label for="c1">Test checkbox</label>
+                        <label for="c1">Test checkbox <span class="required">Required</span></label>
                     </div>
                     <div class="radios">
                         <div class="radio-name">Radio-group</div>
@@ -47,23 +52,24 @@
                         </div>
                     </div>
                     <button type="submit">Submit</button>
+                    <div class="error_block">
+                        <div></div>
+                    </div>
                 </form>
+                <script>
+                    var form1 = $("#test_form_1").ajaxForm()
+                        .loading(function (sending_form, sending_data) { console.log(sending_data)
+                            if(!sending_form.find("input[name=name]").val().length) return "Введите имя!"
+                        })
+                        .success(function (data) {
+                            console.log("success", data)
+                        })
+                        .error(function (error_code) {
+                            $("#test_form_1").find(".error_block").css("display", "block")
+                            $("#test_form_1").find(".error_block > div").html(error_code)
+                        })
+                </script>
             </div>
         </div>
-        <script src="../events-container.js"></script>
-        <script src="../jquery-3.6.3.min.js"></script>
-        <script src="../jquery.ajax-form.js"></script>
-        <script>
-            var form = $("#test_form").ajaxForm()
-                .loading(function (sending_form, sending_data) {
-                    if(!sending_form.find("input[name=name]").val().length) return "Введите имя!"
-                })
-                .success(function (data) {
-                    console.log("success", data)
-                })
-                .error(function (error_code) {
-                    console.log("error: " + error_code)
-                })
-        </script>
     </body>
 </html>

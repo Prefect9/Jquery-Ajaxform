@@ -1,5 +1,6 @@
 html, body{ min-height: 100%; padding: 0; margin: 0; display: block; color: #000 }
 *{ box-sizing: border-box; font-family: sans-serif }
+h1{ margin: 0 0 30px }
 .page{ min-height: 100%; display: flex; background: #efefef; padding: 40px }
 .page > div{ padding: 20px 20px 0; width: calc(100% / 3) }
 .page > div > form{ padding: 30px; border-radius: 20px; background: #fff; box-shadow: 0 0 20px rgba(0, 0, 0, 0.05); display: flex; flex-wrap: wrap }
