@@ -15,12 +15,15 @@ Only the following fields will be sent via ajax: text, checkbox and radio.
 <form action="" method="post" id="demo_form" data-request-type="form-data">
     <input type="text" name="name" value="Name">
     <input type="checkbox" name="checkbox">
+
     <input type="radio" name="r_1" value="1">
     <input type="radio" name="r_1" value="2">
     <input type="radio" name="r_1" value="3">
+
     <input type="radio" name="r_2" value="1">
     <input type="radio" name="r_2" value="2">
     <input type="radio" name="r_2" value="3">
+
     <button type="submit">Submit</button>
 </form>
 ```
@@ -33,7 +36,7 @@ var form = $("#demo_form").ajaxForm()
 You can add a `loading` event. It is called before sending ajax and can be used to show a stub when submitting a form. Validation can also be performed at this stage, if `loading` returns a value other than `undefined`, the `error` event with this returned value will be called.
 At this stage, before sending ajax, you can change the values of the fields.
 ```javascript
-form.loading(function (sended_form) {
+form.loading(function (sended_form, sending_data) {
     if(!sended_form.find("input[name=name]").val().length) return "invalid:empty_name"
 })
 ```
@@ -101,7 +104,7 @@ var options = {
 var form = new AjaxForm(options)
 ```
 
-### Options
+### Constructor options
 #### options.form | `HTMLElement`, _optional_
 The html element to which the ajaxForm object will be bound. If omitted, an empty form will be created.
 
@@ -120,11 +123,13 @@ Type of data expected from the server: `text`, `json`. Default: `json`.
 #### options.getData | `function`, _optional_
 An arbitrary function for transmitting data to be sent via ajax. If the `getData` function is specified, no data is taken from the form fields. By default, data is serialized from form fields that have the name attribute.
 
-### Methods
+
+
+### Object methods
 #### .send()
 Submit the form.
 
-#### .loading(function(sending_form){ ... })
+#### .loading(function(sending_form, sending_data){ ... })
 Add an event before submitting the form, there can be an unlimited number for one form.
 
 #### .success(function(request_data){ ... })
@@ -135,3 +140,21 @@ Add an event when an error occurs. The number of event handlers can be added sev
 
 #### .clear_events()
 Delete all event handlers.
+
+
+
+### Create sausages
+Methods for the `AjaxForm` object can be called continuously:
+```javascript
+var form = $("#demo_form").ajaxForm()
+    .loading(function() {
+        // do something
+    })
+    .success(function() {
+        // do something
+    })
+    .error(function() {
+        // do something
+    })
+    .send()
+```

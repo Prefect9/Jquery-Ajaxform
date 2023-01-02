@@ -2,26 +2,61 @@
     <head>
         <title>Jquery AjaxForm</title>
         <meta name="description" content="Перехват события submit <form> и отправка через Ajax" />
+        <link rel="stylesheet" href="demo.css">
     </head>
     <body>
-        <form action="" method="post" id="test_form" data-request-type="form-data">
-            <input type="text" name="name">
-            <input type="checkbox" name="checkbox">
-            <input type="radio" name="r_1" value="1">
-            <input type="radio" name="r_1" value="2">
-            <input type="radio" name="r_1" value="3">
-            <input type="radio" name="r_2" value="1">
-            <input type="radio" name="r_2" value="2">
-            <input type="radio" name="r_2" value="3">
-            <button type="submit">Submit</button>
-        </form>
+        <div class="page">
+            <div>
+                <form action="" method="post" id="test_form" data-request-type="form-data">
+                    <div class="input-text">
+                        <label for="i1"><span>Name</span> <span class="required">Required</span></label>
+                        <input type="text" id="i1" name="name" placeholder="Enter your name">
+                    </div>
+                    <div class="checkbox">
+                        <input type="checkbox" name="checkbox" id="c1">
+                        <label for="c1">Test checkbox</label>
+                    </div>
+                    <div class="radios">
+                        <div class="radio-name">Radio-group</div>
+                        <div class="radio">
+                            <input type="radio" name="r_1" value="1" id="r11">
+                            <label for="r11">Radio 1.1</label>
+                        </div>
+                        <div class="radio">
+                            <input type="radio" name="r_1" value="2" id="r12">
+                            <label for="r12">Radio 1.2</label>
+                        </div>
+                        <div class="radio">
+                            <input type="radio" name="r_1" value="3" id="r13">
+                            <label for="r13">Radio 1.3</label>
+                        </div>
+                    </div>
+                    <div class="radios">
+                        <div class="radio-name">Radio-group</div>
+                        <div class="radio">
+                            <input type="radio" name="r_2" value="1" id="r21">
+                            <label for="r21">Radio 2.1</label>
+                        </div>
+                        <div class="radio">
+                            <input type="radio" name="r_2" value="2" id="r22">
+                            <label for="r22">Radio 2.2</label>
+                        </div>
+                        <div class="radio">
+                            <input type="radio" name="r_2" value="3" id="r23">
+                            <label for="r23">Radio 2.3</label>
+                        </div>
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+        </div>
         <script src="../events-container.js"></script>
         <script src="../jquery-3.6.3.min.js"></script>
         <script src="../jquery.ajax-form.js"></script>
         <script>
             var form = $("#test_form").ajaxForm()
-                .loading(function (sending_form) {
-                    if(!sended_form.find("input[name=name]").val().length) return "invalid:empty_name"
+                .loading(function (sending_form, sending_data) {
+                    if(!sending_form.find("input[name=name]").val().length) return "Введите имя!"
                 })
                 .success(function (data) {
                     console.log("success", data)

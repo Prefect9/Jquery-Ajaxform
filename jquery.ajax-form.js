@@ -30,7 +30,9 @@
                 _responseType="json",        // json (default), text
                 _form,
                 _customData,
+                _showProgress=false,
                 _events = {
+                    progress: new window.EventsContainer(),
                     loading: new window.EventsContainer(),
                     success: new window.EventsContainer(),
                     error: new window.EventsContainer()
@@ -57,6 +59,8 @@
 
             if(options.getData != undefined && options.getData != "function") throw "Invalid getData method"
             else if(options.getData != undefined) _customData = options.getData
+
+            if(options.showProgress === true) _showProgress = true
 
             var get_form_data = function () {
                 var _data = {}
@@ -102,15 +106,16 @@
                 return _data_return
             }
             var send = function(){
-                for(var loading_result of _events.loading.trigger(_form)){
+                var ajax_data = sending_data()
+                for(var loading_result of _events.loading.trigger(_form, ajax_data)){
                     if(loading_result != undefined) {
                         _events.error.trigger(loading_result)
                         return;
                     }
                 }
+                if(_showProgress) _events.progress.trigger(0)
 
-                var ajax_options = { processData:false },
-                    ajax_data = sending_data()
+                var ajax_options = { processData:false }
                 if(typeof ajax_data != "object") throw "The data to be sent must be in Object1"
                 ajax_options.method = _method
                 ajax_options.url = _url
@@ -146,9 +151,24 @@
                 ajax_options.error = function (jqXHR, textStatus) {
                     if(textStatus == "parsererror") _events.error.trigger("invalid_response")
                     else _events.error.trigger("no_internet_connection")
+                    if(_showProgress) _events.progress.trigger(100)
                 }
                 ajax_options.success = function (data) {
                     _events.success.trigger(data)
+                    if(_showProgress) _events.progress.trigger(100)
+                }
+                if(_showProgress){
+                    var _xhr = function () {
+                        var xhr = new window.XMLHttpRequest()
+                        xhr.upload.addEventListener("progress", function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = evt.loaded / evt.total
+                                percentComplete = parseInt(percentComplete * 100)
+                                _events.progress.trigger(percentComplete)
+                            }
+                        }, false);
+                        return xhr;
+                    }
                 }
                 $.ajax(ajax_options)
 
@@ -171,6 +191,10 @@
                 _events.error.add(_f)
                 return this
             }
+            var progress = function(_f){
+                _events.progress.add(_f)
+                return this
+            }
             var clear_events = function(){
                 _events.loading.clear()
                 _events.success.clear()
@@ -182,6 +206,7 @@
             this.loading = loading
             this.success = success
             this.error = error
+            this.progress = progress
             this.clear_events = clear_events
         }
         window.AjaxForm = AjaxForm

@@ -1,0 +1,16 @@
+html, body{ min-height: 100%; padding: 0; margin: 0; display: block; color: #000 }
+*{ box-sizing: border-box; font-family: sans-serif }
+.page{ min-height: 100%; display: flex; background: #efefef; padding: 40px }
+.page > div{ padding: 20px 20px 0; width: calc(100% / 3) }
+.page > div > form{ padding: 30px; border-radius: 20px; background: #fff; box-shadow: 0 0 20px rgba(0, 0, 0, 0.05); display: flex; flex-wrap: wrap }
+.input-text{ width: 100% }
+.input-text input{ width: 100%; display: flex; align-items: center; padding: 0 15px; height: 35px; font-size: 16px; font-weight: 400; background: #fff; border: 1px solid rgba(0, 0, 0, 0.25); border-radius: 8px; outline: none; color: #000 }
+.input-text input:hover{ border-color: rgba(0, 0, 0, .5) }
+.input-text label{ font-size: 14px; display: block; padding: 0 10px 10px }
+.checkbox, .radio{ display: flex; align-items: center; font-size: 16px; line-height: 120%; margin-top: 20px; width: 100%; cursor: pointer }
+.checkbox label, .radio label{ display: block; padding: 0 8px; flex-grow: 1 }
+.radios{ margin-top: 20px; width: 50% }
+.radio{ margin-top: 10px }
+.radio-name{ font-size: 16px; font-weight: 600 }
+button{ font-size: 16px; line-height: 120%; display: flex; align-items: center; height: 40px; border: 0; color: #fff; background: #2e80f3; margin-top: 40px; text-align: center; width: 100%; border-radius: 8px; justify-content: center }
+.required{ color: rgba(0, 0, 0, .5) }
