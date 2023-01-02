@@ -150,6 +150,7 @@
                 }
                 ajax_options.error = function (jqXHR, textStatus) { console.log(jqXHR)
                     if(textStatus == "parsererror") _events.error.trigger("invalid_response")
+                    else if(jqXHR.status !== 0) _events.error.trigger("server_error")
                     else _events.error.trigger("no_internet_connection")
                     if(_showProgress) _events.progress.trigger(100)
                 }

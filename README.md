@@ -44,6 +44,7 @@ form.loading(function (sended_form, sending_data) {
 The `error` event is used to get errors. The following values can be used as an `error_code` argument to the function:
 - `no_internet_connection`
 - `invalid_response` - the server returned an invalid response
+- `server_error` - the server returned an invalid status code
 - the value returned by the `loading` event if it is not `undefined`
 ```javascript
 form.error(function (error_code) {
