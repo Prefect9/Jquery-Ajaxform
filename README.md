@@ -102,20 +102,20 @@ var form = new AjaxForm(options)
 ```
 
 ### Options
-##### options.form | `HTMLElement`, _optional_
+#### options.form | `HTMLElement`, _optional_
 the html element to which the ajaxForm object will be bound. If omitted, an empty form will be created.
 
-##### options.method | `enum`, _required_
+#### options.method | `enum`, _required_
 sending method: `get`, `post`.
 
-##### options.url | `string`, _optional_
+#### options.url | `string`, _optional_
 ajax delivery address: `""`, `"/"`, `"https://example.com/"`. Default: `""`.
 
-##### options.requestType | `_enum_`, _optional_
+#### options.requestType | `enum`, _optional_
 type of data being sent: `urlencoded`, `json`, `form-data`. Default: `urlencoded`.
 
-##### options.responseType | `enum`, _optional_
+#### options.responseType | `enum`, _optional_
 type of data expected from the server: `text`, `json`. Default: `json`.
 
-##### options.getData | `function`, _optional_
+#### options.getData | `function`, _optional_
 an arbitrary function for transmitting data to be sent via ajax. If the `getData` function is specified, no data is taken from the form fields. By default, data is serialized from form fields that have the name attribute.
