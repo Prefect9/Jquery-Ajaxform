@@ -29,7 +29,6 @@ The library supports:
 - Sending fields as an array:
 ```html
 <!-- Send as array: -->
-
 <input type="checkbox" name="fruit[]" value="apple">
 <input type="checkbox" name="fruit[]" value="banana">
 <input type="checkbox" name="fruit[]" value="orange">
@@ -39,7 +38,18 @@ The library supports:
 <!-- OR -->
 <input type="file" name="file" multiple>
 ```
-- Own field preparation:
+- Send files (only as form-data):
+```html
+<!-- Send one file: -->
+<input type="file" name="file">
+
+<!-- Send multiple files: -->
+<input type="file" name="file[]">
+<input type="file" name="file[]">
+<!-- OR -->
+<input type="file" name="file" multiple>
+```
+- Send your own data instead of form fields:
 ```javascript
 new AjaxForm({
     method: "post",
