@@ -1,5 +1,5 @@
 /* Jquey AjaxForm
- * Version: 1.01
+ * Version: 1.02
  * Author: Prefect9
  * TG: https://t.me/it_dev9/
  */
@@ -15,7 +15,8 @@
                 method: _this.attr("method"),
                 url: _this.attr("action"),
                 requestType: _this.data("request-type"),
-                responseType: _this.data("response-type")
+                responseType: _this.data("response-type"),
+                showProgress: _this.data("show-progress") == "true"
             })
         };
         var AjaxForm = function (options) {
@@ -64,7 +65,7 @@
 
             var get_form_data = function () {
                 var _data = {}
-                for(var _field of _form.find("input[type=text]")){
+                for(var _field of _form.find("input[type=text], input[type=hidden], input[type=password], input[type=email], input[type=phone], input[type=tel], input[type=search], input[type=number], input[type=date], input[type=datetime], input[type=time], input[type=datetime-local]")){
                     _field = $(_field)
                     var _name = _field.attr("name"),
                         _value = _field.val()
@@ -86,6 +87,20 @@
                     var _radio_value = _form.find("input[type=radio][name="+_radio_name+"]:checked").val()
                     _data[_radio_name] = _radio_value
                 }
+                for(var _file_input of _form.find("input[type=file]")){
+                    _file_input = $(_file_input)
+                    var _multiple = false,
+                        _name = _file_input.attr("name"),
+                        _data_field
+                    if(_file_input.attr("multiple") == "multiple") _multiple = true
+
+                    if(_file_input[0].files.length < 1) continue;
+                    if(_multiple){
+                        _data_field = []
+                        for(var _file_input_file of _file_input[0].files) _data_field.push(_file_input_file)
+                    }else _data_field = _file_input[0].files[0]
+                    if(typeof _name == "string" && _name.trim().length) _data[_name] = _data_field
+                }
                 return _data
             }
             var sending_data = function () {
@@ -93,6 +108,7 @@
                     _data_return
                 if(_customData != undefined) _data_form = _customData()
                 else _data_form = get_form_data()
+                if(typeof _data_form != "object") throw "The data to be sent must be in Object"
 
                 if(_requestType == "urlencoded"){
                     _data_return = new URLSearchParams()
@@ -103,11 +119,11 @@
                     _data_return = new FormData()
                     for(var _name in _data_form) _data_return.append(_name, _data_form[_name])
                 }else throw "Unknown request type"
-                return _data_return
+                return { prepared:_data_return, original:_data_form }
             }
             var send = function(){
                 var ajax_data = sending_data()
-                for(var loading_result of _events.loading.trigger(_form, ajax_data)){
+                for(var loading_result of _events.loading.trigger(_form, ajax_data["original"])){
                     if(loading_result != undefined) {
                         _events.error.trigger(loading_result)
                         return;
@@ -116,24 +132,23 @@
                 if(_showProgress) _events.progress.trigger(0)
 
                 var ajax_options = { processData:false }
-                if(typeof ajax_data != "object") throw "The data to be sent must be in Object1"
                 ajax_options.method = _method
                 ajax_options.url = _url
                 switch (_requestType) {
                     case "urlencoded":
-                        if(ajax_data.constructor.name != "URLSearchParams") throw "The data to be sent by URLEncoded must be in URLSearchParams class"
+                        if(ajax_data["prepared"].constructor.name != "URLSearchParams") throw "The data to be sent by URLEncoded must be in URLSearchParams class"
                         ajax_options.contentType = "application/x-www-form-urlencoded; charset=UTF-8"
-                        ajax_options.data = ajax_data.toString()
+                        ajax_options.data = ajax_data["prepared"].toString()
                         break
                     case "json":
-                        if(ajax_data.constructor.name != "Object") throw "The data to be sent by Json must be in Object2"
+                        if(ajax_data["prepared"].constructor.name != "Object") throw "The data to be sent by Json must be in Object"
                         ajax_options.contentType = "application/json; charset=UTF-8"
-                        ajax_options.data = JSON.stringify(ajax_data)
+                        ajax_options.data = JSON.stringify(ajax_data["prepared"])
                         break
                     case "form-data":
-                        if(ajax_data.constructor.name != "FormData") throw "The data to be sent by Json must be in FormData class"
+                        if(ajax_data["prepared"].constructor.name != "FormData") throw "The data to be sent by Json must be in FormData class"
                         ajax_options.contentType = false
-                        ajax_options.data = ajax_data
+                        ajax_options.data = ajax_data["prepared"]
                         break
                     default:
                         throw "Unsupported requestType"
@@ -211,7 +226,7 @@
             this.clear_events = clear_events
         }
         window.AjaxForm = AjaxForm
-        window.AjaxFormVersion = "1.01"
+        window.AjaxFormVersion = "1.02"
     }catch (e) {
         console.error("AjaxForm error: "+e)
     }
