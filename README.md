@@ -25,7 +25,7 @@ $("#form").on("submit", function(e) {
 The library supports:
 - Sending the form in **json**, **x-www-form-urlencoded** and **form-data**.
 - Getting in json, text.
-- Getting an event about the loading process as a percentage
+- Getting an event about the uploading process as a percentage
 - Sending fields as an array:
 ```html
 <!-- Send as array: -->
