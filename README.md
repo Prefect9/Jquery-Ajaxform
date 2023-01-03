@@ -1,6 +1,58 @@
-# Jquery AjaxForm
+# Jquery AjaxForm [Demo](https://prefect9.github.io/Jquery-Ajaxform/demo/)
+## Relevance
+To send the form to ajax, it was necessary to intercept the `submit` event and write its submission via ajax yourself, now this is not required.
+```javascript
+$("#form").ajaxForm()
+    .success(function(data) {
+        console.log("Congratulations!")
+    })
+
+// instead of
+
+$("#form").on("submit", function(e) {
+    e.preventDefault()
+    $.ajax({
+        method: $("#form").attr("method"),
+        url: $("#form").attr("action"),
+        data: { ..somefields.. },
+        success: function() {
+            ...
+        }
+    })
+})
+```
+
+The library supports:
+- Sending the form in **json**, **x-www-form-urlencoded** and **form-data**.
+- Getting in json, text.
+- Getting an event about the loading process as a percentage
+- Sending fields as an array:
+```html
+<!-- Send as array: -->
+
+<input type="checkbox" name="fruit[]" value="apple">
+<input type="checkbox" name="fruit[]" value="banana">
+<input type="checkbox" name="fruit[]" value="orange">
+
+<input type="file" name="file[]">
+<input type="file" name="file[]">
+<!-- OR -->
+<input type="file" name="file" multiple>
+```
+- Own field preparation:
+```javascript
+new AjaxForm({
+    method: "post",
+    getData: function() {
+        return { "input": "value" }
+    }
+}).send()
+```
+
+
+
 ## Dependencies
-For the library to work, you need to connect [jQuery](https://jquery.com/download/) and [EventsContainer](https://github.com/Prefect9/Js-EventsContainer). Scripts with libraries need to be connected before the <script> tag with the AjaxForm library.
+For the library to work, you need to connect [jQuery](https://jquery.com/download/) and [EventsContainer](https://github.com/Prefect9/Js-EventsContainer). Scripts with libraries need to be connected before the \<script\> tag with the AjaxForm library.
 
 
 
@@ -72,6 +124,20 @@ form.send()
 
 
 
+## Uploading process
+Add the `data-show-progress="true"` attribute and the `progress` event to the form:
+```html
+<form method="post" id="form" data-show-progress="true"></form>
+<script>
+$("#form").ajaxForm()
+    .progress(function (percent) {
+        console.log(percent)
+    })
+</script>
+```
+
+
+
 ## Types of data received and sent
 Types of data to be sent:
 - `urlencoded` _(by default)_
@@ -124,6 +190,9 @@ Type of data expected from the server: `text`, `json`. Default: `json`.
 #### options.getData | `function`, _optional_
 An arbitrary function for transmitting data to be sent via ajax. If the `getData` function is specified, no data is taken from the form fields. By default, data is serialized from form fields that have the name attribute.
 
+#### options.showProgress | `bool`, _optional_
+Enables calling `progress` events.
+
 
 
 ### Object methods
@@ -138,6 +207,9 @@ Add an event after successfully submitting the form, the server response is pass
 
 #### .error(function (error_code) { ... })
 Add an event when an error occurs. The number of event handlers can be added several.
+
+#### .progress(function (percent) { ... })
+Adds a function that gets the percentage of form data sent. The number of event handlers can be added several.
 
 #### .clear_events()
 Delete all event handlers.

@@ -16,7 +16,7 @@
                 url: _this.attr("action"),
                 requestType: _this.data("request-type"),
                 responseType: _this.data("response-type"),
-                showProgress: _this.data("show-progress") == "true"
+                showProgress: !!_this.data("show-progress")
             })
         };
         var AjaxForm = function (options) {
@@ -58,7 +58,7 @@
             if(options.responseType != undefined && !["text", "json"].includes(options.responseType.toLowerCase())) throw "Unknown response type"
             else if(options.responseType != undefined) _responseType = options.responseType.toLowerCase()
 
-            if(options.getData != undefined && options.getData != "function") throw "Invalid getData method"
+            if(options.getData != undefined && typeof options.getData != "function") throw "Invalid getData method"
             else if(options.getData != undefined) _customData = options.getData
 
             if(options.showProgress === true) _showProgress = true
@@ -71,11 +71,23 @@
                         _value = _field.val()
                     if(typeof _name == "string" && _name.trim().length) _data[_name] = _value
                 }
+                var _checkbox_names = []
                 for(var _checkbox of _form.find("input[type=checkbox]")){
                     _checkbox = $(_checkbox)
-                    var _name = _checkbox.attr("name"),
-                        _value = _checkbox.prop("checked")
-                    if(typeof _name == "string" && _name.trim().length) _data[_name] = _value
+                    var _name = _checkbox.attr("name")
+                    if(typeof _name == "string" && _name.trim().length && !_checkbox_names.includes(_name)) _checkbox_names.push(_name)
+                }
+                for(var _checkbox_name of _checkbox_names){
+                    if(/^[a-z0-9_-]+\[\]$/ig.test(_checkbox_name)){
+                        var _values = []
+                        for(var _checkbox of _form.find("input[type=checkbox][name='" + _checkbox_name + "']")) {
+                            if ($(_checkbox).prop("checked")) _values.push($(_checkbox).val())
+                        }
+                        _data[_checkbox_name.substr(0, _checkbox_name.length-2)] = _values
+                    }else {
+                        var _value = _form.find("input[type=checkbox][name='" + _checkbox_name + "']").prop("checked")
+                        _data[_checkbox_name] = _value
+                    }
                 }
                 var _radio_names = []
                 for(var _radio of _form.find("input[type=radio]")){
@@ -84,7 +96,7 @@
                     if(typeof _name == "string" && _name.trim().length && !_radio_names.includes(_name)) _radio_names.push(_name)
                 }
                 for(var _radio_name of _radio_names){
-                    var _radio_value = _form.find("input[type=radio][name="+_radio_name+"]:checked").val()
+                    var _radio_value = _form.find("input[type=radio][name='"+_radio_name+"']:checked").val()
                     _data[_radio_name] = _radio_value
                 }
                 for(var _file_input of _form.find("input[type=file]")){
@@ -99,25 +111,103 @@
                         _data_field = []
                         for(var _file_input_file of _file_input[0].files) _data_field.push(_file_input_file)
                     }else _data_field = _file_input[0].files[0]
-                    if(typeof _name == "string" && _name.trim().length) _data[_name] = _data_field
+
+                    if(typeof _name == "string" && _name.trim().length) {
+                        if (/^[a-z0-9_-]+\[\]$/ig.test(_name)) {
+                            _name = _name.substr(0, _name.length-2)
+                            if(typeof _data_field != "object" || _data_field.constructor.name != "Array") _data_field = [_data_field]
+                            if(typeof _data[_name] != "object" || _data[_name].constructor.name != "Array") _data[_name] = _data_field
+                            else _data[_name] = _data[_name].concat(_data_field)
+                        } else _data[_name] = _data_field
+                    }
                 }
                 return _data
+            }
+            var parse_object = function (_data) {
+                if(typeof _data != "object") throw "The data to be sent must be in Object"
+                var _result = {}
+                for(var _field in _data){
+                    var _value = _data[_field],
+                        _type = typeof _value
+                    if(["string", "symbol", "number", "bigint", "boolean"].includes(_type)) _result[_field] = _value
+                    if(_type == "undefined") _result[_field] = null
+                    if(_type == "object" && _value.constructor.name == "Object") _result[_field] = parse_object(_value)
+                    else if(_type == "object" && _value.constructor.name == "Array") _result[_field] = parse_array(_value)
+                    else if(_type == "object" && _value.constructor.name == "File" && options.requestType == "form-data") _result[_field] = _value
+                }
+                return _result
+            }
+            var parse_array = function (_data) {
+                if(typeof _data != "object" || _data.constructor.name != "Array") throw "The data to be sent must be in Array"
+                var _result = []
+                for(var _value of _data){
+                    var _type = typeof _value
+                    if(["string", "symbol", "number", "bigint", "boolean"].includes(_type)) _result.push(_value)
+                    if(_type == "undefined") _result.push(null)
+                    if(_type == "object" && _value.constructor.name == "Object") _result.push(parse_object(_value))
+                    else if(_type == "object" && _value.constructor.name == "Array") _result.push(parse_array(_value))
+                    else if(_type == "object" && _value.constructor.name == "File" && options.requestType == "form-data") _result.push(_value)
+                }
+                return _result
+            }
+            var prepare_formData = function (_container, _data, _before_name) {
+                var _type_data = typeof _data
+                if(_type_data == "object" && _data.constructor.name == "Object"){
+                    for(var _field in _data){
+                        if(!/^[a-z0-9_\-\[\]]+$/ig.test(_field)){
+                            console.error("AjaxForm: The "+_field+" field contains forbidden characters in the name")
+                            continue;
+                        }
+                        var _value = _data[_field],
+                            _type = typeof _value,
+                            _name_field
+                        if(_before_name == null || _before_name == undefined) _name_field = _field
+                        else _name_field = _before_name + "["+_field+"]"
+                        if(["string", "symbol", "number", "bigint", "boolean"].includes(_type)) _container.append(_name_field, _value)
+                        if(_type == "undefined") _container.append(_name_field, null)
+                        if(_type == "object" && _value == null) _container.append(_name_field, _value)
+                        else if(_type == "object" && _value.constructor.name == "Object") prepare_formData(_container, _value, _name_field)
+                        else if(_type == "object" && _value.constructor.name == "Array") prepare_formData(_container, _value, _name_field)
+                        else if(_type == "object" && _value.constructor.name == "File" && options.requestType == "form-data") _container.append(_field, _value)
+                    }
+                }
+                else if(_type_data == "object" && _data.constructor.name == "Array"){
+                    if(_before_name == null || _before_name == undefined){
+                        console.error("AjaxForm: The passed Array must belong to some field")
+                        return;
+                    }
+                    for(var _value of _data){
+                        var _type = typeof _value,
+                            _name_field
+                        _name_field = _before_name + "[]"
+                        if(["string", "symbol", "number", "bigint", "boolean"].includes(_type)) _container.append(_name_field, _value)
+                        if(_type == "undefined") _container.append(_name_field, null)
+                        if(_type == "object" && _value.constructor.name == "Object") prepare_formData(_container, _value, _name_field)
+                        else if(_type == "object" && _value.constructor.name == "Array") prepare_formData(_container, _value, _name_field)
+                        else if(_type == "object" && _value.constructor.name == "File" && options.requestType == "form-data") _container.append(_name_field, _value)
+                    }
+                }
+                else{
+                    console.error("AjaxForm: FormData parser error")
+                    return;
+                }
             }
             var sending_data = function () {
                 var _data_form,
                     _data_return
                 if(_customData != undefined) _data_form = _customData()
                 else _data_form = get_form_data()
-                if(typeof _data_form != "object") throw "The data to be sent must be in Object"
+
+                _data_form = parse_object(_data_form)
 
                 if(_requestType == "urlencoded"){
                     _data_return = new URLSearchParams()
-                    for(var _name in _data_form) _data_return.append(_name, _data_form[_name])
+                    prepare_formData(_data_return, _data_form, null)
                 }else if(_requestType == "json"){
                     _data_return = _data_form
                 }else if(_requestType == "form-data"){
                     _data_return = new FormData()
-                    for(var _name in _data_form) _data_return.append(_name, _data_form[_name])
+                    prepare_formData(_data_return, _data_form, null)
                 }else throw "Unknown request type"
                 return { prepared:_data_return, original:_data_form }
             }
@@ -163,7 +253,7 @@
                     default:
                         throw "Unsupported responseType"
                 }
-                ajax_options.error = function (jqXHR, textStatus) { console.log(jqXHR)
+                ajax_options.error = function (jqXHR, textStatus) {
                     if(textStatus == "parsererror") _events.error.trigger("invalid_response")
                     else if(jqXHR.status !== 0) _events.error.trigger("server_error")
                     else _events.error.trigger("no_internet_connection")
@@ -179,12 +269,12 @@
                         xhr.upload.addEventListener("progress", function (evt) {
                             if (evt.lengthComputable) {
                                 var percentComplete = evt.loaded / evt.total
-                                percentComplete = parseInt(percentComplete * 100)
-                                _events.progress.trigger(percentComplete)
+                                _events.progress.trigger(percentComplete*100)
                             }
-                        }, false);
-                        return xhr;
+                        }, false)
+                        return xhr
                     }
+                    ajax_options.xhr = _xhr
                 }
                 $.ajax(ajax_options)
 

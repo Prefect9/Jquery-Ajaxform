@@ -11,7 +11,7 @@
     <body>
         <div class="page">
             <div>
-                <form action="" method="post" id="test_form_1">
+                <form action="http://github-examples.mvc-project.site/Jquery-Ajaxform/check-radios" method="post" id="test_form_1">
                     <h1>With a pre-check</h1>
                     <div class="input-text">
                         <label for="i1"><span>Name</span> <span class="required">Required</span></label>
@@ -51,19 +51,53 @@
                             <label for="r23">Radio 2.3</label>
                         </div>
                     </div>
-                    <button type="submit">Submit</button>
-                    <div class="error_block">
-                        <div></div>
+                    <div class="checkboxes">
+                        <div class="radio-name">Checkboxes-group</div>
+                        <div class="checkbox">
+                            <input type="checkbox" name="cg[]" id="cg1" value="cg1">
+                            <label for="cg1">Checkbox 1</label>
+                        </div>
+                        <div class="checkbox">
+                            <input type="checkbox" name="cg[]" id="cg2" value="cg2">
+                            <label for="cg2">Checkbox 2</label>
+                        </div>
+                        <div class="checkbox">
+                            <input type="checkbox" name="cg[]" id="cg3" value="cg3">
+                            <label for="cg3">Checkbox 3</label>
+                        </div>
+                        <div class="checkbox">
+                            <input type="checkbox" name="cg[]" id="cg4" value="cg4">
+                            <label for="cg4">Checkbox 4</label>
+                        </div>
+                        <div class="checkbox">
+                            <input type="checkbox" name="cg[]" id="cg5" value="cg5">
+                            <label for="cg5">Checkbox 5</label>
+                        </div>
+                        <div class="checkbox">
+                            <input type="checkbox" name="cg[]" id="cg6" value="cg6">
+                            <label for="cg6">Checkbox 6</label>
+                        </div>
                     </div>
+                    <button type="submit">Submit</button>
+                    <div class="error_block"><div></div></div>
+                    <div class="success_block"><div></div></div>
                 </form>
                 <script>
                     var form1 = $("#test_form_1").ajaxForm()
-                        .loading(function (sending_form, sending_data) {
+                        .loading(function (sending_form, sending_data) { console.log(sending_data)
+                            $("#test_form_1").find(".error_block").css("display", "none")
+                            $("#test_form_1").find(".success_block").css("display", "none")
                             if(!sending_form.find("input[name=name]").val().length) return "Enter a name!"
                             if(!sending_data.checkbox) return "You need to put a checkbox";
                         })
                         .success(function (data) {
-                            console.log("success", data)
+                            if(data.status == "ok"){
+                                $("#test_form_1").find(".success_block").css("display", "block")
+                                $("#test_form_1").find(".success_block > div").html("Server return: "+data.message)
+                            }else{
+                                $("#test_form_1").find(".error_block").css("display", "block")
+                                $("#test_form_1").find(".error_block > div").html("Server return: "+data.message)
+                            }
                         })
                         .error(function (error_code) {
                             $("#test_form_1").find(".error_block").css("display", "block")
@@ -72,33 +106,53 @@
                 </script>
             </div>
             <div>
-                <form action="" method="post" id="test_form_2" data-request-type="form-data" data-show-progress="true">
+                <form action="http://github-examples.mvc-project.site/Jquery-Ajaxform/upload-file" method="post" id="test_form_2" data-request-type="form-data" data-show-progress="true">
                     <h1>Progress bar</h1>
                     <div class="input-text">
-                        <label for="f1"><span>File</span> <span class="required">Required</span></label>
+                        <label for="f1">File <span class="file-name"></span></label>
                         <label for="f1" class="select_file">Select file</label>
                         <input type="file" id="f1" name="file" placeholder="Enter your file">
                     </div>
-                    <button type="submit">Submit</button>
-                    <div class="error_block">
-                        <div></div>
+                    <div class="progress">
+                        <div class="progress-bar"></div>
                     </div>
+                    <button type="submit">Submit</button>
+                    <div class="error_block"><div></div></div>
+                    <div class="success_block"><div></div></div>
                 </form>
                 <script>
                     var form2 = $("#test_form_2").ajaxForm()
                         .loading(function (sending_form, sending_data) {
-                            console.log(sending_data)
+                            $("#test_form_2").find(".error_block").css("display", "none")
+                            $("#test_form_2").find(".success_block").css("display", "none")
                         })
                         .success(function (data) {
-                            console.log("success", data)
+                            if(data.status == "ok"){
+                                $("#test_form_2").find(".success_block").css("display", "block")
+                                $("#test_form_2").find(".success_block > div").html("Server return: "+data.message)
+                            }else{
+                                $("#test_form_2").find(".error_block").css("display", "block")
+                                $("#test_form_2").find(".error_block > div").html("Server return: "+data.message)
+                            }
                         })
                         .error(function (error_code) {
                             $("#test_form_2").find(".error_block").css("display", "block")
                             $("#test_form_2").find(".error_block > div").html(error_code)
                         })
                         .progress(function (percent) {
-                            console.log(percent)
+                            if(percent >= 100){
+                                $("#test_form_2").find(".progress").css("display", "none")
+                                return;
+                            }
+                            $("#test_form_2").find(".progress").css("display", "block")
+                            $("#test_form_2").find(".progress-bar").css("width", percent+"%")
                         })
+
+                    $("#f1").on("change", function (e) {
+                        var names = []
+                        for(var file of $("#f1")[0].files) names.push(file.name)
+                        $("#test_form_2 .file-name").html(names.join(", "))
+                    })
                 </script>
             </div>
         </div>
